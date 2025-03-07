@@ -14,7 +14,23 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    
+    <StackPanel>
+        <Button Command="{Binding CalculateApproximation}">
+            Calc
+        </Button>
+        <Border BorderBrush="Black" BorderThickness="2" Width="400" Height="400">
+            <Path Stroke="Blue" StrokeThickness="2">
+                <Path.Data>
+                    <!-- <PathGeometry> -->
+                    <!--     <PathFigure IsClosed="False" StartPoint="0,400"> -->
+                    <!--         <ArcSegment Point="200,400" Size="100,100" /> -->
+                    <!--     </PathFigure> -->
+                    <!-- </PathGeometry> -->
+                    <PathGeometry Figures="{Binding BezierCurves}"/>
+                </Path.Data>
+            </Path>
+        </Border>
+    </StackPanel>
 
 </Window>
