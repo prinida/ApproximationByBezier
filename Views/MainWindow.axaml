@@ -16,20 +16,29 @@
     </Design.DataContext>
     
     <StackPanel>
-        <Button Command="{Binding CalculateApproximation}">
+        <Button Command="{Binding CalculateApproximationCommand}">
             Calc
         </Button>
+        <CheckBox IsChecked="{Binding IsCurveVisible}">Curve</CheckBox>
+        <StackPanel Width="200">
+            <TextBlock Text="Count of intervals: " />
+            <TextBox Text="{Binding IntervalsCount}" />
+            <Slider Maximum="100" Minimum="1" 
+                    Value="{Binding IntervalsCount}"/>
+        </StackPanel>
         <Border BorderBrush="Black" BorderThickness="2" Width="400" Height="400">
-            <Path Stroke="Blue" StrokeThickness="2">
-                <Path.Data>
-                    <!-- <PathGeometry> -->
-                    <!--     <PathFigure IsClosed="False" StartPoint="0,400"> -->
-                    <!--         <ArcSegment Point="200,400" Size="100,100" /> -->
-                    <!--     </PathFigure> -->
-                    <!-- </PathGeometry> -->
-                    <PathGeometry Figures="{Binding BezierCurves}"/>
-                </Path.Data>
-            </Path>
+            <Canvas Background="White">
+                <Path Stroke="Blue" StrokeThickness="2">
+                    <Path.Data>
+                        <PathGeometry Figures="{Binding BezierCurves}"/>
+                    </Path.Data>
+                </Path>
+                <Path Stroke="Red" StrokeThickness="2" IsVisible="{Binding IsCurveVisible}">
+                    <Path.Data>
+                        <PathGeometry Figures="{Binding Curve}"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
         </Border>
     </StackPanel>
 
