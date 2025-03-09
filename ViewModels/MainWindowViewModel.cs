@@ -1,10 +1,12 @@
 ﻿using ApproximationByBezier.Models;
 using Avalonia;
 using Avalonia.Media;
+using Avalonia.Threading;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Reactive;
+using System.Threading.Tasks;
 using Point = ApproximationByBezier.Models.Point;
 
 namespace ApproximationByBezier.ViewModels
@@ -24,7 +26,7 @@ namespace ApproximationByBezier.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _intervalsCount, value);
-                CalculateApproximation();
+                CalculateApproximationCommand.Execute();
             }
         }
 
@@ -34,14 +36,14 @@ namespace ApproximationByBezier.ViewModels
         public MainWindowViewModel()
         {
             _intervalsCount = 3;
-            CalculateApproximationCommand = ReactiveCommand.Create(CalculateApproximation);
+            CalculateApproximationCommand = ReactiveCommand.CreateFromTask(CalculateApproximation);
         }
 
-        private void CalculateApproximation()
+        private async Task CalculateApproximation()
         {
             _grid = new Grid(0, 400, 0, IntervalsCount);
             _approximator = new BezierCurveApproximator(_grid, (double x) 
-                => Math.Sqrt(40000 - (x - 200) * (x - 200)));
+                => Math.Sqrt(210 * 210 - (x - 200) * (x - 200)) + 10);
                 
             var bezierCurves = _approximator.Approximate();
             PathFigures figures = [];
@@ -50,19 +52,34 @@ namespace ApproximationByBezier.ViewModels
                 var point1 = curve.QuadraticBezierCurvePoints[0];
                 var point2 = curve.QuadraticBezierCurvePoints[1];
                 var point3 = curve.QuadraticBezierCurvePoints[2];
-                var aPoint1 = new Avalonia.Point(point1.X, 400 - point1.Y);
-                var aPoint2 = new Avalonia.Point(point2.X, 400 - point2.Y);
-                var aPoint3 = new Avalonia.Point(point3.X, 400 - point3.Y);
-                var bezierSegment = new QuadraticBezierSegment { Point1 = aPoint2, Point2 = aPoint3 };
-                var bezierPathFigure = new PathFigure {IsClosed = false, StartPoint = aPoint1, Segments = [bezierSegment]};
-                figures.Add(bezierPathFigure);
+                // await Observable.Start(() =>
+                // {
+                //     var aPoint1 = new Avalonia.Point(point1.X, 400 - point1.Y);
+                //     var aPoint2 = new Avalonia.Point(point2.X, 400 - point2.Y);
+                //     var aPoint3 = new Avalonia.Point(point3.X, 400 - point3.Y);
+                //     var bezierSegment = new QuadraticBezierSegment { Point1 = aPoint2, Point2 = aPoint3 };
+                //     var bezierPathFigure = new PathFigure
+                //     {
+                //         IsClosed = false, StartPoint = aPoint1, Segments = [bezierSegment]
+                //     };
+                //     figures.Add(bezierPathFigure);
+                // }, RxApp.MainThreadScheduler);
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var aPoint1 = new Avalonia.Point(point1.X, 400 - point1.Y);
+                    var aPoint2 = new Avalonia.Point(point2.X, 400 - point2.Y);
+                    var aPoint3 = new Avalonia.Point(point3.X, 400 - point3.Y);
+                    var bezierSegment = new QuadraticBezierSegment { Point1 = aPoint2, Point2 = aPoint3 };
+                    var bezierPathFigure = new PathFigure {IsClosed = false, StartPoint = aPoint1, Segments = [bezierSegment]};
+                    figures.Add(bezierPathFigure);
+                });
             }
 
-            var arcPoint1 = new Point(0, 0);
-            var arcPoint2 = new Point(400, 0);
+            var arcPoint1 = new Point(0, 10);
+            var arcPoint2 = new Point(400, 10);
             var aArcPoint1 = new Avalonia.Point(arcPoint1.X, 400 - arcPoint1.Y);
             var aArcPoint2 = new Avalonia.Point(arcPoint2.X, 400 - arcPoint2.Y);
-            var arcSegment = new ArcSegment { Point = aArcPoint2, Size = new Size(200, 200)};
+            var arcSegment = new ArcSegment { Point = aArcPoint2, Size = new Size(210, 210)};
             var arcPathFigure = new PathFigure {IsClosed = false, StartPoint = aArcPoint1, Segments = [arcSegment]};
             Curve = [arcPathFigure];
                 

@@ -32,7 +32,6 @@ public class QuadraticBezierCurve
     {
         double t = (_derivativePointX - _point1X) / (_point2X - _point1X);
         double f = _curve(_derivativePointX);
-        //_pointX = (_derivativePointX - ((1 - t) * (1 - t) * _point1X) - (t * t * _point2X)) / (2 * t * (1 - t));
         _pointX = _derivativePointX;
         _pointY = (f - ((1 - t) * (1 - t) * _point1Y) - (t * t * _point2Y)) / (2 * t * (1 - t));
     }
