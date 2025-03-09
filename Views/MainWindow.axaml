@@ -28,7 +28,7 @@
         </StackPanel>
         <Border BorderBrush="Black" BorderThickness="2" Width="400" Height="400">
             <Canvas Background="White">
-                <Path PointerPressed="InputElement_OnPointerPressed" Stroke="Blue" StrokeThickness="2">
+                <Path Stroke="Blue" StrokeThickness="2">
                     <Path.Data>
                         <PathGeometry Figures="{Binding BezierCurves}"/>
                     </Path.Data>
