@@ -38,6 +38,14 @@
                         <PathGeometry Figures="{Binding Curve}"/>
                     </Path.Data>
                 </Path>
+                <Path Stroke="Red" StrokeThickness="3">
+                    <Path.Data>
+                        <EllipseGeometry Transform="" ></EllipseGeometry>
+                    </Path.Data>
+                    <Path.Fill>
+                        <SolidColorBrush Color="Green" />
+                    </Path.Fill>
+                </Path>
             </Canvas>
         </Border>
     </StackPanel>

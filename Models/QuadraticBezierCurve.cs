@@ -1,39 +1,45 @@
 using System;
 
 namespace ApproximationByBezier.Models;
-public class QuadraticBezierCurve
+public class QuadraticBezierCurve : Curve
 {
-    private readonly double _point1X;
-    private readonly double _point1Y;
-    private readonly double _point2X;
-    private readonly double _point2Y;
+    public Point Point1 { get; set; }
+    public Point Point2 { get; set; }
+    public Point Point3 { get; set; }
     private readonly double _derivativePointX;
     private readonly Func<double, double> _curve;
-    private double _pointX;
-    private double _pointY;
 
-    public Point[] QuadraticBezierCurvePoints { get; }
-
-    public QuadraticBezierCurve(Point point1, Point point2, double derivativePointX, Func<double, double> curve)
+    public QuadraticBezierCurve(Point start, Point end, double derivativePointX, Func<double, double> curve)
     {
-        _point1X = point1.X;
-        _point1Y = point1.Y;
-        _point2X = point2.X;
-        _point2Y = point2.Y;
+        Point1 = start;
+        Point3 = end;
         _derivativePointX = derivativePointX;
         _curve = curve;
-        
-        FindCurvePoint();
-        Point point = new(_pointX, _pointY);
-        QuadraticBezierCurvePoints = [point1, point, point2];
     }
 
-    private void FindCurvePoint()
+    public override double[,] GetLocalMatrix()
     {
-        double t = (_derivativePointX - _point1X) / (_point2X - _point1X);
-        double f = _curve(_derivativePointX);
-        _pointX = _derivativePointX;
-        _pointY = (f - ((1 - t) * (1 - t) * _point1Y) - (t * t * _point2Y)) / (2 * t * (1 - t));
+        double t = (_derivativePointX - Point1.X) / (Point3.X - Point1.X);
+        return new[,]
+        {
+            {2 + 2 * Math.Pow(1 - t, 4), 4 * t * Math.Pow(1 - t, 3), 2 * t * t * Math.Pow(1 - t, 2)}, 
+            {4 * t * Math.Pow(1 - t, 3), 8 * t * t * Math.Pow(1 - t, 2), 4 * t * t * t * (1 - t) },
+            {2 * t * t * Math.Pow(1 - t, 2), 4 * t * t * t * (1 - t), 2 + 2 * t * t * t * t}
+        };
+    }
+
+    public override double[] GetLocalRightPart()
+    {
+        double t = (_derivativePointX - Point1.X) / (Point3.X - Point1.X);
+        double f1 = _curve(Point1.X);
+        double f2 = _curve(_derivativePointX);
+        double f3 = _curve(Point3.X);
+        return
+        [
+            2 * f1 + 2 * Math.Pow(1 - t, 2) * f2,
+            4 * t * (1 - t) * f2,
+            2 * t * t * f2 + 2 * f3
+        ];
     }
 }
     

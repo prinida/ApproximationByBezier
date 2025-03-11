@@ -45,18 +45,18 @@ namespace ApproximationByBezier.ViewModels
             PathFigures figures = [];
             foreach (var curve in bezierCurves)
             {
-                var point1 = curve.QuadraticBezierCurvePoints[0];
-                var point2 = curve.QuadraticBezierCurvePoints[1];
-                var point3 = curve.QuadraticBezierCurvePoints[2];
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    var aPoint1 = new Avalonia.Point(point1.X, 400 - point1.Y);
-                    var aPoint2 = new Avalonia.Point(point2.X, 400 - point2.Y);
-                    var aPoint3 = new Avalonia.Point(point3.X, 400 - point3.Y);
-                    var bezierSegment = new QuadraticBezierSegment { Point1 = aPoint2, Point2 = aPoint3 };
-                    var bezierPathFigure = new PathFigure {IsClosed = false, StartPoint = aPoint1, Segments = [bezierSegment]};
-                    figures.Add(bezierPathFigure);
-                });
+                // var point1 = curve.QuadraticBezierCurvePoints[0];
+                // var point2 = curve.QuadraticBezierCurvePoints[1];
+                // var point3 = curve.QuadraticBezierCurvePoints[2];
+                // await Dispatcher.UIThread.InvokeAsync(() =>
+                // {
+                //     var aPoint1 = new Avalonia.Point(point1.X, 400 - point1.Y);
+                //     var aPoint2 = new Avalonia.Point(point2.X, 400 - point2.Y);
+                //     var aPoint3 = new Avalonia.Point(point3.X, 400 - point3.Y);
+                //     var bezierSegment = new QuadraticBezierSegment { Point1 = aPoint2, Point2 = aPoint3 };
+                //     var bezierPathFigure = new PathFigure {IsClosed = false, StartPoint = aPoint1, Segments = [bezierSegment]};
+                //     figures.Add(bezierPathFigure);
+                // });
             }
             BezierCurves = figures;
             
