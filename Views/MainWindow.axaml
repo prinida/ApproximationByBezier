@@ -29,8 +29,10 @@
         <StackPanel Width="200">
             <TextBlock Text="Count of internal points: " />
             <TextBox Text="{Binding InternalPointsCount}" />
-            <Slider Maximum="100" Minimum="1" 
-                    Value="{Binding InternalPointsCount}"/>
+            <TextBlock Text="Doubling rate: " />
+            <TextBox Text="{Binding DoublingRate}" />
+            <Slider Maximum="10" Minimum="0" 
+                    Value="{Binding DoublingRate}"/>
         </StackPanel>
         <Border BorderBrush="Black" BorderThickness="2" Width="400" Height="400">
             <Canvas Background="White">

@@ -28,6 +28,17 @@ namespace ApproximationByBezier.ViewModels
                 CalculateApproximationCommand.Execute();
             }
         }
+
+        private int _doublingRate;
+        public int DoublingRate
+        {
+            get => _doublingRate;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _doublingRate, value);
+                InternalPointsCount = (int)Math.Pow(2, _doublingRate + 1) - 1;
+            }
+        }
         
         private int _internalPointsCount;
         public int InternalPointsCount
@@ -44,6 +55,7 @@ namespace ApproximationByBezier.ViewModels
         {
             _intervalsCount = 3;
             _internalPointsCount = 1;
+            _doublingRate = 0;
             CalculateApproximationCommand = ReactiveCommand.CreateFromTask(CalculateApproximation);
         }
 
