@@ -7,8 +7,8 @@ public class SLAE
     private double[,] _matrix;
     private double[] _rightPart;
     private double[] _solution;
-    
-    public double[] Solution { get; private set; }
+
+    public double[] Solution => _solution;
 
     public SLAE(int matrixSize)
     {
@@ -22,6 +22,7 @@ public class SLAE
         if (isSum)
         {
             _matrix[i, j] += element;
+            return;
         }
         _matrix[i, j] = element;
     }
@@ -31,6 +32,7 @@ public class SLAE
         if (isSum)
         {
             _rightPart[i] += element;
+            return;
         }
         _rightPart[i] = element;
     }

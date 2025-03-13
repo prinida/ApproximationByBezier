@@ -4,8 +4,6 @@ public class SLAEbuilder
 {
     private SLAE _slae;
     
-    public SLAE SLAE { get; private set; }
-    
     public SLAEbuilder(SLAE slae)
     {
         _slae = slae;
@@ -22,18 +20,11 @@ public class SLAEbuilder
 
             for (int i = 0; i < elementsNumber; ++i)
             {
-                int globalI = n * elementsNumber + i;
-                if (n != 0)
-                {
-                    globalI--;
-                }
+                int factor = n == 0 ? elementsNumber : elementsNumber - 1;
+                int globalI = n * factor + i;
                 for (int j = 0; j < elementsNumber; ++j)
                 {
-                    int globalJ = n * elementsNumber + j;
-                    if (n != 0)
-                    {
-                        globalJ--;
-                    }
+                    int globalJ = n * factor + j;
                     double matrixElement = localMatrix[i, j];
                     _slae.PutElementInMatrix(matrixElement, globalI, globalJ, i == 0);
                 }

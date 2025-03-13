@@ -9,10 +9,11 @@ public class QuadraticBezierCurve : Curve
     private readonly double _derivativePointX;
     private readonly Func<double, double> _curve;
 
-    public QuadraticBezierCurve(Point start, Point end, double derivativePointX, Func<double, double> curve)
+    public QuadraticBezierCurve(double startX, double endX, double derivativePointX, Func<double, double> curve)
     {
-        Point1 = start;
-        Point3 = end;
+        Point1 = new Point(startX, 0);
+        Point2 = new Point(derivativePointX, 0);
+        Point3 = new Point(endX, 0);
         _derivativePointX = derivativePointX;
         _curve = curve;
     }
