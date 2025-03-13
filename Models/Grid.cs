@@ -8,15 +8,17 @@ namespace ApproximationByBezier.Models
         private readonly double _endX;
         private readonly double _yCoordinate;
         private readonly int _intervalsNumber;
+        private readonly int _internalPointsNumber;
         
         public List<(Point start, Point end)> GridIntervals { get; }
-        public List<Point> DerivativePoints { get; }
+        public List<Point[]> DerivativePoints { get; }
 
-        public Grid(double startX, double endX, double yCoordinate, int intervalsNumber)
+        public Grid(double startX, double endX, double yCoordinate, int intervalsNumber, int internalPointsNumber)
         {
             _startX = startX;
             _endX = endX;
             _intervalsNumber = intervalsNumber;
+            _internalPointsNumber = internalPointsNumber;
             _yCoordinate = yCoordinate;
             GridIntervals = [];
             DerivativePoints = [];
@@ -30,9 +32,15 @@ namespace ApproximationByBezier.Models
             {
                 double x1 = _startX + i * step;
                 double x2 = _startX + (i + 1) * step;
-                double derivativeX = (x2 + x1) / 2;
                 GridIntervals.Add((new Point(x1, _yCoordinate), new Point(x2, _yCoordinate)));
-                DerivativePoints.Add(new Point(derivativeX, _yCoordinate));
+
+                Point[] derivativePoints = new Point[_internalPointsNumber];
+                double derivativeStep = (x2 - x1) / (_internalPointsNumber + 1);
+                for (int j = 0; j < _internalPointsNumber; ++j)
+                {
+                    derivativePoints[j] = new Point(x1 + (j + 1) * derivativeStep, _yCoordinate);
+                }
+                DerivativePoints.Add(derivativePoints);
             }
         }
     }

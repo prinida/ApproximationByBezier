@@ -20,9 +20,10 @@ namespace ApproximationByBezier.Models
             List<Curve> curves = [];
             var intervalsAndDerivativesPoints = _grid.GridIntervals.Zip(_grid.DerivativePoints,
                 (inter, der) => (inter.start, inter.end, der));
-            foreach ((Point start, Point end, Point der) in intervalsAndDerivativesPoints)
+            foreach ((Point start, Point end, Point[] der) in intervalsAndDerivativesPoints)
             {
-                var curve = new QuadraticBezierCurve(start.X, end.X, der.X, _curve);
+                double[] derivativePointsX = der.Select(p => p.X).ToArray();
+                var curve = new QuadraticBezierCurve(start.X, end.X, derivativePointsX, _curve);
                 curves.Add(curve);
             }
 
@@ -33,9 +34,10 @@ namespace ApproximationByBezier.Models
             double[] solution = slae.Solution;
             List<QuadraticBezierCurve> quadraticBezierCurves = [];
             int counter = 0;
-            foreach ((Point start, Point end, Point der) in intervalsAndDerivativesPoints)
+            foreach ((Point start, Point end, Point[] der) in intervalsAndDerivativesPoints)
             {
-                var qBcurve = new QuadraticBezierCurve(start.X, end.X, der.X, _curve);
+                double[] derivativePointsX = der.Select(p => p.X).ToArray();
+                var qBcurve = new QuadraticBezierCurve(start.X, end.X, derivativePointsX, _curve);
                 qBcurve.Point1 = new Point(qBcurve.Point1.X, solution[counter]);
                 qBcurve.Point2 = new Point(qBcurve.Point2.X, solution[counter + 1]);
                 qBcurve.Point3 = new Point(qBcurve.Point3.X, solution[counter + 2]);

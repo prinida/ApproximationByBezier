@@ -28,17 +28,29 @@ namespace ApproximationByBezier.ViewModels
                 CalculateApproximationCommand.Execute();
             }
         }
-        private Grid Grid => new (0, 400, 0, IntervalsCount);
+        
+        private int _internalPointsCount;
+        public int InternalPointsCount
+        {
+            get => _internalPointsCount;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _internalPointsCount, value);
+                CalculateApproximationCommand.Execute();
+            }
+        }
 
         public MainWindowViewModel()
         {
             _intervalsCount = 3;
+            _internalPointsCount = 1;
             CalculateApproximationCommand = ReactiveCommand.CreateFromTask(CalculateApproximation);
         }
 
         private async Task CalculateApproximation()
         {
-            var approximator = new BezierCurveApproximator(Grid, (double x) 
+            var grid = new Grid(0, 400, 0, IntervalsCount, InternalPointsCount);
+            var approximator = new BezierCurveApproximator(grid, (double x) 
                 => Math.Sqrt(200 * 200 - (x - 200) * (x - 200)));
                 
             var bezierCurves = approximator.Approximate();
