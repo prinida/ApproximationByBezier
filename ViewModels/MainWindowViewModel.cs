@@ -16,7 +16,45 @@ namespace ApproximationByBezier.ViewModels
         public ReactiveCommand<Unit, Unit> CalculateApproximationCommand { get; }
         [Reactive] public PathFigures BezierCurves { get; set; }
         [Reactive] public PathFigures Curve { get; set; }
+        [Reactive] public PathFigures GridIntervals { get; set; }
+        [Reactive] public GeometryCollection GridDerivativePoints { get; set; }
+        [Reactive] public bool IsGridIntervalsVisible { get; set; }
+        [Reactive] public bool IsGridDerivativePointsVisible { get; set; }
         [Reactive] public bool IsCurveVisible { get; set; }
+
+        private Grid _grid;
+
+        private Grid Grid
+        {
+            get => _grid;
+            set
+            {
+                // Это должно быть в другом месте, это замедляет работу другого интерфейса
+                _grid = value;
+                PathFigures intervals = [];
+                foreach (var interval in _grid.GridIntervals)
+                {
+                    var aLineStart = new Avalonia.Point(interval.start.X, 0);
+                    var aLineEnd = new Avalonia.Point(interval.start.X, 400);
+                    var line = new LineSegment { Point = aLineEnd };
+                    var pathFigure = new PathFigure { StartPoint = aLineStart, Segments = [line] };
+                    intervals.Add(pathFigure);
+                }
+                GridIntervals = intervals;
+
+                GeometryCollection derivativePoints = [];
+                foreach (var derPoints in _grid.DerivativePoints)
+                {
+                    foreach (var derPoint in derPoints)
+                    {
+                        var aCenter = new Avalonia.Point(derPoint.X, 398 - derPoint.Y);
+                        var circle = new EllipseGeometry { Center = aCenter, RadiusX = 3, RadiusY = 3};
+                        derivativePoints.Add(circle);
+                    }
+                }
+                GridDerivativePoints = derivativePoints;
+            }
+        }
 
         private int _selectedBezierCurveIndex;
         public int SelectedBezierCurveIndex
@@ -38,6 +76,7 @@ namespace ApproximationByBezier.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _intervalsCount, value);
+                Grid = new Grid(0, 400, 0, value, InternalPointsCount);
                 CalculateApproximationCommand.Execute();
             }
         }
@@ -61,6 +100,7 @@ namespace ApproximationByBezier.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _internalPointsCount, value);
+                Grid = new Grid(0, 400, 0, IntervalsCount, value);
                 CalculateApproximationCommand.Execute();
             }
         }
@@ -72,6 +112,7 @@ namespace ApproximationByBezier.ViewModels
             _doublingRate = 0;
             int bezierCurveOrder = _selectedBezierCurveIndex + 2;
             _internalPointsCount = (int)(bezierCurveOrder * Math.Pow(2, _doublingRate) - 1);
+            Grid = new Grid(0, 400, 0, IntervalsCount, InternalPointsCount);
             CalculateApproximationCommand = ReactiveCommand.CreateFromTask(CalculateApproximation);
             
             var arcPoint1 = new Point(0, 0);
@@ -88,9 +129,11 @@ namespace ApproximationByBezier.ViewModels
         private async Task CalculateApproximation()
         {
             int bezierCurveOrder = SelectedBezierCurveIndex + 2;
-            var grid = new Grid(0, 400, 0, IntervalsCount, InternalPointsCount);
-            var approximator = new BezierCurveApproximator(grid, (double x) 
+            var approximator = new BezierCurveApproximator(Grid, (double x)
                 => Math.Sqrt(200 * 200 - (x - 200) * (x - 200)), bezierCurveOrder);
+            
+            // var approximator = new BezierCurveApproximator(grid, (double x) 
+            //     => 200 * (Math.Sin(x) + 1), bezierCurveOrder);
                 
             var bezierCurves = approximator.Approximate();
             PathFigures figures = [];
