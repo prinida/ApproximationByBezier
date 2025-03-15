@@ -6,16 +6,18 @@ namespace ApproximationByBezier.Models
 {
     public class BezierCurveApproximator
     {
-        private Grid _grid;
-        private Func<double, double> _curve;
+        private readonly Grid _grid;
+        private readonly Func<double, double> _curve;
+        private readonly int _bezierCurveOrder;
 
-        public BezierCurveApproximator(Grid grid, Func<double, double> curve)
+        public BezierCurveApproximator(Grid grid, Func<double, double> curve, int bezierCurveOrder)
         {
             _grid = grid;
             _curve = curve;
+            _bezierCurveOrder = bezierCurveOrder;
         }
 
-        public List<QuadraticBezierCurve> Approximate()
+        public List<Curve> Approximate()
         {
             List<Curve> curves = [];
             var intervalsAndDerivativesPoints = _grid.GridIntervals.Zip(_grid.DerivativePoints,
@@ -23,28 +25,38 @@ namespace ApproximationByBezier.Models
             foreach ((Point start, Point end, Point[] der) in intervalsAndDerivativesPoints)
             {
                 double[] derivativePointsX = der.Select(p => p.X).ToArray();
-                var curve = new QuadraticBezierCurve(start.X, end.X, derivativePointsX, _curve);
-                curves.Add(curve);
+                switch (_bezierCurveOrder)
+                {
+                    case 2:
+                        {
+                            var curve = new QuadraticBezierCurve(start.X, end.X, derivativePointsX, _curve);
+                            curves.Add(curve);
+                            break;
+                        }
+                    case 3:
+                        {
+                            var curve = new CubicBezierCurve(start.X, end.X, derivativePointsX, _curve);
+                            curves.Add(curve);
+                            break;
+                        }
+                }
             }
-
-            SLAE slae = new(2 * curves.Count + 1);
+            
+            SLAE slae = new(_bezierCurveOrder * curves.Count + 1);
             SLAEbuilder builder = new(slae);
             builder.BuildSLAE(curves.ToArray());
             slae.CalcSLAEbyGauss();
             double[] solution = slae.Solution;
-            List<QuadraticBezierCurve> quadraticBezierCurves = [];
             int counter = 0;
-            foreach ((Point start, Point end, Point[] der) in intervalsAndDerivativesPoints)
+            foreach (var curve in curves)
             {
-                double[] derivativePointsX = der.Select(p => p.X).ToArray();
-                var qBcurve = new QuadraticBezierCurve(start.X, end.X, derivativePointsX, _curve);
-                qBcurve.Point1 = new Point(qBcurve.Point1.X, solution[counter]);
-                qBcurve.Point2 = new Point(qBcurve.Point2.X, solution[counter + 1]);
-                qBcurve.Point3 = new Point(qBcurve.Point3.X, solution[counter + 2]);
-                counter += 2;
-                quadraticBezierCurves.Add(qBcurve);
+                for (int i = 0; i <= _bezierCurveOrder; ++i)
+                {
+                    curve.Points[i] = new Point(curve.Points[i].X, solution[counter + i]);
+                }
+                counter += _bezierCurveOrder;
             }
-            return quadraticBezierCurves;
+            return curves;
         }
     }
 }

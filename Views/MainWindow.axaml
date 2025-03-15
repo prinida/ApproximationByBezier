@@ -16,6 +16,10 @@
     </Design.DataContext>
     
     <StackPanel>
+        <ComboBox SelectedIndex="{Binding SelectedBezierCurveIndex}">
+            <ComboBoxItem>Quadratic Bezier curve</ComboBoxItem>
+            <ComboBoxItem>Cubic Bezier curve</ComboBoxItem>
+        </ComboBox>
         <Button Command="{Binding CalculateApproximationCommand}">
             Calc
         </Button>
