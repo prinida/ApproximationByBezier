@@ -5,6 +5,7 @@ using Avalonia.Threading;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Point = ApproximationByBezier.Models.Point;
@@ -40,6 +41,13 @@ namespace ApproximationByBezier.ViewModels
                     var pathFigure = new PathFigure { StartPoint = aLineStart, Segments = [line] };
                     intervals.Add(pathFigure);
                 }
+
+                var lastInterval = _grid.GridIntervals.LastOrDefault();
+                var aLastLineStart = new Avalonia.Point(lastInterval.end.X, 0);
+                var aLastLineEnd = new Avalonia.Point(lastInterval.end.X, 400);
+                var lastLine = new LineSegment { Point = aLastLineEnd };
+                var lastPathFigure = new PathFigure { StartPoint = aLastLineStart, Segments = [lastLine] };
+                intervals.Add(lastPathFigure);
                 GridIntervals = intervals;
 
                 GeometryCollection derivativePoints = [];
@@ -134,6 +142,9 @@ namespace ApproximationByBezier.ViewModels
             
             // var approximator = new BezierCurveApproximator(grid, (double x) 
             //     => 200 * (Math.Sin(x) + 1), bezierCurveOrder);
+            
+            //var approximator = new BezierCurveApproximator(Grid, (double x)
+                //=> ((x - 200) * (x - 200) * (x - 200)) * 1e-3 + 200, bezierCurveOrder);
                 
             var bezierCurves = approximator.Approximate();
             PathFigures figures = [];
