@@ -123,12 +123,18 @@ namespace ApproximationByBezier.ViewModels
             Grid = new Grid(0, 400, 0, IntervalsCount, InternalPointsCount);
             CalculateApproximationCommand = ReactiveCommand.CreateFromTask(CalculateApproximation);
             
-            var arcPoint1 = new Point(0, 0);
-            var arcPoint2 = new Point(400, 0);
+            // var arcPoint1 = new Point(0, 0);
+            // var arcPoint2 = new Point(400, 0);
+            // var aArcPoint1 = new Avalonia.Point(arcPoint1.X, 400 - arcPoint1.Y);
+            // var aArcPoint2 = new Avalonia.Point(arcPoint2.X, 400 - arcPoint2.Y);
+            // var arcSegment = new ArcSegment
+            //     { Point = aArcPoint2, Size = new Size(200, 200)};
+            var arcPoint1 = new Point(0, 100);
+            var arcPoint2 = new Point(400, 100);
             var aArcPoint1 = new Avalonia.Point(arcPoint1.X, 400 - arcPoint1.Y);
             var aArcPoint2 = new Avalonia.Point(arcPoint2.X, 400 - arcPoint2.Y);
             var arcSegment = new ArcSegment
-                { Point = aArcPoint2, Size = new Size(200, 200)};
+                { Point = aArcPoint2, Size = new Size(200, 100)};
             var arcPathFigure = new PathFigure
                 {IsClosed = false, StartPoint = aArcPoint1, Segments = [arcSegment]};
             Curve = [arcPathFigure];
@@ -137,14 +143,17 @@ namespace ApproximationByBezier.ViewModels
         private async Task CalculateApproximation()
         {
             int bezierCurveOrder = SelectedBezierCurveIndex + 2;
-            var approximator = new BezierCurveApproximator(Grid, (double x)
-                => Math.Sqrt(200 * 200 - (x - 200) * (x - 200)), bezierCurveOrder);
+            //var approximator = new BezierCurveApproximator(Grid, (double x)
+                //=> Math.Sqrt(200 * 200 - (x - 200) * (x - 200)), bezierCurveOrder);
             
             // var approximator = new BezierCurveApproximator(grid, (double x) 
             //     => 200 * (Math.Sin(x) + 1), bezierCurveOrder);
             
             //var approximator = new BezierCurveApproximator(Grid, (double x)
                 //=> ((x - 200) * (x - 200) * (x - 200)) * 1e-3 + 200, bezierCurveOrder);
+                
+            var approximator = new BezierCurveApproximator(Grid, (double x)
+                => 100 * Math.Sqrt(1 - (x - 200) * (x - 200) / (200 * 200)) + 100, bezierCurveOrder);
                 
             var bezierCurves = approximator.Approximate();
             PathFigures figures = [];
