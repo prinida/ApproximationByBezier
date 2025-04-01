@@ -1,9 +1,11 @@
+using ApproximationByBezier.Utilities.Exceptions;
 using System;
 
 namespace ApproximationByBezier.Models;
 
 public class SLAE
 {
+    private const double Epsilon = 1e-15;
     private double[,] _matrix;
     private double[] _rightPart;
     private double[] _solution;
@@ -50,6 +52,11 @@ public class SLAE
                 {
                     m = i;
                 }
+            }
+
+            if (Math.Abs(_matrix[m, k]) < Epsilon)
+            {
+                throw new SlaeSolverException("Solution isn't unambiguous", Epsilon);
             }
 
             (_rightPart[k], _rightPart[m]) = (_rightPart[m], _rightPart[k]);

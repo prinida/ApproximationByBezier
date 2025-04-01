@@ -1,3 +1,4 @@
+using ApproximationByBezier.Utilities.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,15 @@ namespace ApproximationByBezier.Models
             SLAE slae = new(_bezierCurveOrder * curves.Count + 1);
             SLAEbuilder builder = new(slae);
             builder.BuildSLAE(curves.ToArray());
-            slae.CalcSLAEbyGauss();
+            try
+            {
+                slae.CalcSLAEbyGauss();
+            }
+            catch (SlaeSolverException ex)
+            {
+                Console.WriteLine($"Error with SLAE solver: {ex.Message} with epsilon = {ex.Epsilon}");
+                throw;
+            }
             double[] solution = slae.Solution;
             int counter = 0;
             foreach (var curve in curves)
